@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1120" viewBox="0 0 900 1120">
+  <rect width="900" height="1120" fill="#d8d4d2"/>
+  <text x="48" y="340" fill="#302d33" font-family="Georgia,serif" font-size="390" letter-spacing="-36">Aa</text>
+  <text x="66" y="474" fill="#6b646c" font-family="Georgia,serif" font-size="80" font-style="italic">softly spoken</text>
+  <path d="M68 550h764" stroke="#514b53" stroke-opacity=".34"/>
+  <g fill="#39353b" font-family="Arial,sans-serif" font-size="22"><text x="68" y="630">CACTUS CLASSICAL SERIF</text><text x="68" y="688" fill-opacity=".55">A study in rhythm, contrast, and quiet detail.</text></g>
+  <circle cx="700" cy="890" r="122" fill="#f2cf75" fill-opacity=".58"/>
+  <circle cx="620" cy="900" r="122" fill="#6e6475" fill-opacity=".42"/>
+</svg>

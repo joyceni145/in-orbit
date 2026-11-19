@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="820" viewBox="0 0 1200 820">
+  <rect width="1200" height="820" fill="#e9e2d3"/>
+  <g stroke="#2d2a2c" stroke-opacity=".16"><path d="M88 0v820M340 0v820M592 0v820M844 0v820M1096 0v820"/><path d="M0 90h1200M0 364h1200M0 638h1200"/></g>
+  <text x="90" y="205" fill="#262329" font-family="Georgia,serif" font-size="116" letter-spacing="-6">Observe</text>
+  <text x="92" y="250" fill="#4d494b" font-family="Arial,sans-serif" font-size="18" letter-spacing="3">NOTES ON LOOKING SLOWLY</text>
+  <rect x="592" y="90" width="504" height="274" rx="4" fill="#c9bda8"/>
+  <circle cx="844" cy="227" r="82" fill="#ffdb77" fill-opacity=".74"/>
+  <g fill="#353137"><rect x="90" y="545" width="180" height="8"/><rect x="90" y="574" width="236" height="5" fill-opacity=".5"/><rect x="90" y="598" width="208" height="5" fill-opacity=".5"/></g>
+  <text x="844" y="703" text-anchor="middle" fill="#302d31" font-family="Georgia,serif" font-size="36">Issue 04</text>
+</svg>
