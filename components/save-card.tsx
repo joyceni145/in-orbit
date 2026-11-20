@@ -5,6 +5,15 @@
 import { useEffect, useRef, useState } from "react";
 import type { Save } from "@/content/saves";
 
+const cardTypeLabels: Record<string, string> = {
+  Books: "Book",
+  Articles: "Article",
+  Websites: "Website",
+  Videos: "Video",
+  Tools: "Tool",
+  Portfolio: "Portfolio",
+};
+
 type SaveCardProps = {
   save: Save;
   onOpenDetails: (save: Save) => void;
@@ -103,6 +112,7 @@ export function SaveCard({ save, onOpenDetails, onEdit, onDelete }: SaveCardProp
   const opensDetails = (Boolean(save.description) && descriptionTruncated) || !save.url;
   const visibleTags = [...save.tags, ...(save.styleTags ?? [])];
   const actionLabel = opensDetails ? `Read notes for ${save.title}` : `Open ${save.title} in a new tab`;
+  const typeLabel = cardTypeLabels[save.type] ?? save.type;
 
   return (
     <article className="save-card">
@@ -122,7 +132,7 @@ export function SaveCard({ save, onOpenDetails, onEdit, onDelete }: SaveCardProp
         )}
       </div>
       <div className="card-content">
-        <span className="type-tag">{save.type.slice(0, -1)}</span>
+        <span className="type-tag">{typeLabel}</span>
         <h2>{save.title}</h2>
         {displayDescription && <p ref={descriptionRef}>{displayDescription}</p>}
         {opensDetails && save.description && <span className="card-note-cue" aria-hidden="true">View full notes</span>}

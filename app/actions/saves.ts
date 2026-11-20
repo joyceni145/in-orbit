@@ -34,13 +34,15 @@ function validateSaveInput(input: CreateSaveInput) {
   if (!url || !isSaveType(input.contentType)) return null;
 
   const tags = cleanTags(input.tags);
+  const contentType = input.contentType.trim();
+  const supportsPortfolioStyles = contentType.toLowerCase() === "portfolio" || tags.some(tag => tag.toLowerCase() === "portfolio");
   return {
     title: typeof input.title === "string" ? input.title.trim().slice(0, 240) : "",
     url,
     notes: typeof input.notes === "string" ? input.notes.trim().slice(0, 12_000) : "",
-    contentType: input.contentType.trim(),
+    contentType,
     tags,
-    styleTags: tags.some(tag => tag.toLowerCase() === "portfolio") ? cleanTags(input.styleTags) : [],
+    styleTags: supportsPortfolioStyles ? cleanTags(input.styleTags) : [],
   };
 }
 

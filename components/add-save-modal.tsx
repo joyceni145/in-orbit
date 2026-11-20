@@ -19,6 +19,7 @@ const typeLabels: Record<string, string> = {
   Websites: "Website",
   Videos: "Video",
   Tools: "Tool",
+  Portfolio: "Portfolio",
 };
 
 function parseWebAddress(value: string) {
@@ -292,7 +293,7 @@ export function AddSaveModal({ availableTypes, availableTags, availableStyleTags
   const submittingRef = useRef(false);
   const closeRef = useRef(onClose);
   const parsedUrl = useMemo(() => parseWebAddress(url), [url]);
-  const isPortfolio = selectedTags.some(tag => tag.toLowerCase() === "portfolio");
+  const isPortfolio = contentType.trim().toLowerCase() === "portfolio";
   const isDirty = editing
     ? contentType !== initialSave?.type || title !== initialSave?.title || url !== initialSave?.url || notes !== initialSave?.description || JSON.stringify(selectedTags) !== JSON.stringify(initialSave?.tags ?? []) || JSON.stringify(selectedStyleTags) !== JSON.stringify(initialSave?.styleTags ?? [])
     : contentType !== "Websites" || Boolean(title.trim() || url.trim() || notes.trim() || selectedTags.length || selectedStyleTags.length);
@@ -374,7 +375,9 @@ export function AddSaveModal({ availableTypes, availableTags, availableStyleTags
         source: suggestedTitle,
         description: notes.trim(),
         tags: selectedTags,
-        styleTags: isPortfolio && selectedStyleTags.length ? selectedStyleTags : undefined,
+        styleTags: (isPortfolio ? selectedStyleTags : initialSave?.styleTags ?? []).length
+          ? (isPortfolio ? selectedStyleTags : initialSave?.styleTags)
+          : undefined,
         savedAt: initialSave?.savedAt ?? new Date().toISOString(),
         artwork: artworkForType(contentType),
         url: parsedUrl.toString(),
@@ -449,36 +452,23 @@ export function AddSaveModal({ availableTypes, availableTags, availableStyleTags
             </label>
 
             <fieldset className="form-field tag-field">
-              <legend>Secondary tags <small>Optional</small></legend>
-              <p className="field-help">Add topics, collections, or other details you want to filter later.</p>
+              <legend>{isPortfolio ? "Portfolio Styles" : "Secondary tags"} <small>Optional</small></legend>
+              <p className="field-help">
+                {isPortfolio ? "Describe the visual qualities you want to find again." : "Add topics, collections, or other details you want to filter later."}
+              </p>
               <TagPicker
-                availableTags={allTags}
-                selectedTags={selectedTags}
-                onChange={tags => {
-                  setSelectedTags(tags);
-                  if (!tags.some(tag => tag.toLowerCase() === "portfolio")) setSelectedStyleTags([]);
-                }}
-                onCreate={tag => setNewTags(current => [...current, tag])}
-                optionsId="tag-options"
+                availableTags={isPortfolio ? allStyleTags : allTags}
+                selectedTags={isPortfolio ? selectedStyleTags : selectedTags}
+                onChange={isPortfolio ? setSelectedStyleTags : setSelectedTags}
+                onCreate={isPortfolio
+                  ? tag => setNewStyleTags(current => [...current, tag])
+                  : tag => setNewTags(current => [...current, tag])}
+                optionsId={isPortfolio ? "portfolio-style-options" : "tag-options"}
+                addLabel={isPortfolio ? "Add style" : "Add tag"}
+                searchLabel={isPortfolio ? "Search or create portfolio styles" : "Search or create tags"}
+                searchPlaceholder={isPortfolio ? "Search styles…" : "Search tags…"}
               />
             </fieldset>
-
-            {isPortfolio && (
-              <fieldset className="form-field tag-field portfolio-style-field">
-                <legend>Portfolio style <small>Optional</small></legend>
-                <p className="field-help">Describe the visual qualities you want to find again.</p>
-                <TagPicker
-                  availableTags={allStyleTags}
-                  selectedTags={selectedStyleTags}
-                  onChange={setSelectedStyleTags}
-                  onCreate={tag => setNewStyleTags(current => [...current, tag])}
-                  optionsId="portfolio-style-options"
-                  addLabel="Add style"
-                  searchLabel="Search or create portfolio styles"
-                  searchPlaceholder="Search styles…"
-                />
-              </fieldset>
-            )}
           </div>
 
           {showDiscard && (

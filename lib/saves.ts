@@ -35,7 +35,7 @@ export type DeleteSaveResult =
   | { ok: true; id: string }
   | { ok: false; error: string };
 
-export const saveTypes = ["Books", "Articles", "Websites", "Videos", "Tools"] as const;
+export const saveTypes = ["Books", "Articles", "Websites", "Videos", "Tools", "Portfolio"] as const;
 
 const artworkByType: Partial<Record<string, Save["artwork"]>> = {
   Books: "book",
@@ -43,6 +43,7 @@ const artworkByType: Partial<Record<string, Save["artwork"]>> = {
   Websites: "orbits",
   Videos: "landscape",
   Tools: "diagram",
+  Portfolio: "orbits",
 };
 
 export function isSaveType(value: unknown): value is Save["type"] {

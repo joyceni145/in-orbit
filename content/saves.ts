@@ -1,4 +1,4 @@
-export const categories = ["All saves", "Books", "Articles", "Websites", "Videos", "Tools"] as const;
+export const categories = ["All saves", "Books", "Articles", "Websites", "Videos", "Tools", "Portfolio"] as const;
 export type Category = string;
 export type Save = {
   id: string;

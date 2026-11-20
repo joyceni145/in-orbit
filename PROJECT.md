@@ -63,7 +63,7 @@ The intended interaction is a modal, not a separate page.
 
 The Add save modal includes a required manual Type choice near the top, followed by title, URL, notes, and optional secondary tag entry. Type is a searchable single-select: existing values can be reused, and a new value can be created when the right category does not yet exist. The selected Type is persisted directly as the save's primary Library category rather than inferred by the system, and custom values become available as Library filters. The modal uses a warm yellow “star core” treatment and the primary action is labeled “Send into orbit.” When Supabase is configured, new saves are written through an authenticated server action and the success animation runs only after the database confirms the insert. Without backend configuration, the visual prototype retains its temporary local-state fallback. Custom secondary tag names are retained in browser session storage so the tag picker can be reviewed across modal openings. A short shooting-star transition is a provisional success animation pending further motion references.
 
-Selecting the secondary `Portfolio` tag reveals a separate optional Portfolio style field. Style labels such as `Playful` and `Modern & clean` remain distinct from general content tags so the archive can eventually filter by both subject and visual character.
+Selecting `Portfolio` as the primary Type changes the lower optional tag control from Secondary tags to Portfolio Styles. Style labels such as `Playful` and `Modern & clean` remain distinct from general content tags. Legacy imported saves that used a secondary `Portfolio` tag retain their existing style metadata when edited.
 
 Tag controls sit directly on the modal gradient as individual warm-white pills that echo the input fields, rather than inside a boxed field. The modal X closes immediately; Cancel, backdrop, and Escape retain unsaved-change protection.
 
@@ -317,7 +317,7 @@ Use `app/` for routes and global styles, `components/` for reusable UI, and `con
 - Notion is a one-time import source rather than a permanent two-way sync.
 - Imported saves preserve Notion Type values as categories, descriptive Tags separately, Portfolio Level where present, and Favourite as a dedicated state.
 - Add and Edit save flows expose Type as an explicit primary category; the system does not choose it automatically.
-- General tags remain optional secondary metadata, with Portfolio styles revealed when the Portfolio tag is selected.
+- General tags remain optional secondary metadata; selecting Portfolio as the primary Type replaces that control with Portfolio Styles.
 - Images can be removed from the current session through the enlarged detail view; persistent deletion waits for Storage integration.
 - Each imported record stores its Notion page ID and source so repeated imports can update or skip the same page without relying on URL uniqueness.
 
