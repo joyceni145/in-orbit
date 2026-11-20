@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 
 export type SelectOption<T extends string> = {
   value: T;
@@ -13,11 +13,14 @@ type SelectMenuProps<T extends string> = {
   options: readonly SelectOption<T>[];
   onChange: (value: T) => void;
   disabled?: boolean;
+  optionsId?: string;
 };
 
-export function SelectMenu<T extends string>({ label, value, options, onChange, disabled = false }: SelectMenuProps<T>) {
+export function SelectMenu<T extends string>({ label, value, options, onChange, disabled = false, optionsId }: SelectMenuProps<T>) {
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(() => Math.max(0, options.findIndex(option => option.value === value)));
+  const generatedId = useId();
+  const menuId = optionsId ?? generatedId;
   const rootRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const optionRefs = useRef<Array<HTMLButtonElement | null>>([]);
@@ -84,7 +87,7 @@ export function SelectMenu<T extends string>({ label, value, options, onChange, 
         aria-label={label}
         aria-haspopup="listbox"
         aria-expanded={open}
-        aria-controls="sort-options"
+        aria-controls={menuId}
         disabled={disabled}
         onClick={() => open ? setOpen(false) : openMenu()}
         onKeyDown={event => {
@@ -99,7 +102,7 @@ export function SelectMenu<T extends string>({ label, value, options, onChange, 
       </button>
 
       {open && (
-        <div id="sort-options" className="select-options" role="listbox" aria-label={label}>
+        <div id={menuId} className="select-options" role="listbox" aria-label={label}>
           {options.map((option, index) => (
             <button
               key={option.value}

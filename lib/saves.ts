@@ -18,6 +18,7 @@ export type CreateSaveInput = {
   title: string;
   url: string;
   notes: string;
+  contentType: Save["type"];
   tags: string[];
   styleTags: string[];
 };
@@ -34,6 +35,8 @@ export type DeleteSaveResult =
   | { ok: true; id: string }
   | { ok: false; error: string };
 
+export const saveTypes = ["Books", "Articles", "Websites", "Videos", "Tools"] as const satisfies readonly Save["type"][];
+
 const artworkByType: Record<Save["type"], Save["artwork"]> = {
   Books: "book",
   Articles: "type",
@@ -41,6 +44,14 @@ const artworkByType: Record<Save["type"], Save["artwork"]> = {
   Videos: "landscape",
   Tools: "diagram",
 };
+
+export function isSaveType(value: unknown): value is Save["type"] {
+  return typeof value === "string" && saveTypes.some(type => type === value);
+}
+
+export function artworkForType(type: Save["type"]): Save["artwork"] {
+  return artworkByType[type];
+}
 
 export function normalizeWebAddress(value: string) {
   const trimmed = value.trim();
@@ -59,9 +70,7 @@ export function sourceFromUrl(url: URL) {
 }
 
 export function saveFromRow(row: SaveRow): Save {
-  const type = (["Books", "Articles", "Websites", "Videos", "Tools"] as const).includes(row.content_type as Save["type"])
-    ? row.content_type as Save["type"]
-    : "Websites";
+  const type = isSaveType(row.content_type) ? row.content_type : "Websites";
 
   return {
     id: row.id,

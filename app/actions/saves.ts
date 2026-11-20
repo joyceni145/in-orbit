@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { fetchLinkMetadata } from "@/lib/link-metadata";
-import { normalizeWebAddress, saveFromRow, sourceFromUrl, type CreateSaveInput, type CreateSaveResult, type DeleteSaveResult, type SaveRow, type UpdateSaveInput } from "@/lib/saves";
+import { isSaveType, normalizeWebAddress, saveFromRow, sourceFromUrl, type CreateSaveInput, type CreateSaveResult, type DeleteSaveResult, type SaveRow, type UpdateSaveInput } from "@/lib/saves";
 import { createClient } from "@/lib/supabase/server";
 
 const saveColumns = "id, title, url, notes, content_type, source, preview_image_url, metadata_description, tags, style_tags, created_at";
@@ -31,13 +31,14 @@ function validateSaveInput(input: CreateSaveInput) {
   if (!input || typeof input !== "object") return null;
 
   const url = normalizeWebAddress(typeof input.url === "string" ? input.url : "");
-  if (!url) return null;
+  if (!url || !isSaveType(input.contentType)) return null;
 
   const tags = cleanTags(input.tags);
   return {
     title: typeof input.title === "string" ? input.title.trim().slice(0, 240) : "",
     url,
     notes: typeof input.notes === "string" ? input.notes.trim().slice(0, 12_000) : "",
+    contentType: input.contentType,
     tags,
     styleTags: tags.some(tag => tag.toLowerCase() === "portfolio") ? cleanTags(input.styleTags) : [],
   };
@@ -66,7 +67,7 @@ export async function createSave(input: CreateSaveInput): Promise<CreateSaveResu
     title: values.title || metadata?.title || source,
     url: values.url.toString(),
     notes: values.notes,
-    content_type: "Websites",
+    content_type: values.contentType,
     source,
     tags: values.tags,
     style_tags: values.styleTags,
@@ -111,6 +112,7 @@ export async function updateSave(input: UpdateSaveInput): Promise<CreateSaveResu
     title: values.title || source,
     url: values.url.toString(),
     notes: values.notes,
+    content_type: values.contentType,
     source,
     tags: values.tags,
     style_tags: values.styleTags,

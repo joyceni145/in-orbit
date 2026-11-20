@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Save } from "@/content/saves";
-import type { CreateSaveResult } from "@/lib/saves";
+import { artworkForType, type CreateSaveResult } from "@/lib/saves";
+import { SelectMenu, type SelectOption } from "./select-menu";
 
 type AddSaveModalProps = {
   availableTags: string[];
@@ -11,6 +12,14 @@ type AddSaveModalProps = {
   onSave: (save: Save, tags: string[], styleTags: string[]) => Promise<CreateSaveResult>;
   onClose: () => void;
 };
+
+const saveTypeOptions: readonly SelectOption<Save["type"]>[] = [
+  { value: "Books", label: "Book" },
+  { value: "Articles", label: "Article" },
+  { value: "Websites", label: "Website" },
+  { value: "Videos", label: "Video" },
+  { value: "Tools", label: "Tool" },
+];
 
 function parseWebAddress(value: string) {
   const trimmed = value.trim();
@@ -130,6 +139,7 @@ function TagPicker({ availableTags, selectedTags, onChange, onCreate, optionsId,
 
 export function AddSaveModal({ availableTags, availableStyleTags, initialSave, onSave, onClose }: AddSaveModalProps) {
   const editing = Boolean(initialSave);
+  const [contentType, setContentType] = useState<Save["type"]>(initialSave?.type ?? "Websites");
   const [title, setTitle] = useState(initialSave?.title ?? "");
   const [url, setUrl] = useState(initialSave?.url ?? "");
   const [notes, setNotes] = useState(initialSave?.description ?? "");
@@ -150,8 +160,8 @@ export function AddSaveModal({ availableTags, availableStyleTags, initialSave, o
   const parsedUrl = useMemo(() => parseWebAddress(url), [url]);
   const isPortfolio = selectedTags.some(tag => tag.toLowerCase() === "portfolio");
   const isDirty = editing
-    ? title !== initialSave?.title || url !== initialSave?.url || notes !== initialSave?.description || JSON.stringify(selectedTags) !== JSON.stringify(initialSave?.tags ?? []) || JSON.stringify(selectedStyleTags) !== JSON.stringify(initialSave?.styleTags ?? [])
-    : Boolean(title.trim() || url.trim() || notes.trim() || selectedTags.length || selectedStyleTags.length);
+    ? contentType !== initialSave?.type || title !== initialSave?.title || url !== initialSave?.url || notes !== initialSave?.description || JSON.stringify(selectedTags) !== JSON.stringify(initialSave?.tags ?? []) || JSON.stringify(selectedStyleTags) !== JSON.stringify(initialSave?.styleTags ?? [])
+    : contentType !== "Websites" || Boolean(title.trim() || url.trim() || notes.trim() || selectedTags.length || selectedStyleTags.length);
   const allTags = useMemo(() => Array.from(new Set([...availableTags, ...newTags])).sort((a, b) => a.localeCompare(b)), [availableTags, newTags]);
   const allStyleTags = useMemo(() => Array.from(new Set([...availableStyleTags, ...newStyleTags])).sort((a, b) => a.localeCompare(b)), [availableStyleTags, newStyleTags]);
   const suggestedTitle = parsedUrl?.hostname.replace(/^www\./, "") ?? "";
@@ -225,13 +235,13 @@ export function AddSaveModal({ availableTags, availableStyleTags, initialSave, o
       result = await onSave({
         id: initialSave?.id ?? `save-${Date.now()}`,
         title: title.trim() || suggestedTitle,
-        type: "Websites",
+        type: contentType,
         source: suggestedTitle,
         description: notes.trim(),
         tags: selectedTags,
         styleTags: isPortfolio && selectedStyleTags.length ? selectedStyleTags : undefined,
         savedAt: initialSave?.savedAt ?? new Date().toISOString(),
-        artwork: initialSave?.artwork ?? "orbits",
+        artwork: artworkForType(contentType),
         url: parsedUrl.toString(),
       }, newTags, isPortfolio ? newStyleTags : []);
     } catch {
@@ -266,6 +276,17 @@ export function AddSaveModal({ availableTags, availableStyleTags, initialSave, o
 
         <form onSubmit={handleSubmit} noValidate aria-busy={isSubmitting}>
           <div className="form-fields">
+            <div className="form-field save-type-field">
+              <span>Type</span>
+              <SelectMenu
+                label="Save type"
+                value={contentType}
+                options={saveTypeOptions}
+                onChange={setContentType}
+                optionsId="save-type-options"
+              />
+            </div>
+
             <label className="form-field">
               <span>Title <small>Optional</small></span>
               <input value={title} onChange={event => setTitle(event.target.value)} placeholder={suggestedTitle || "Give it a title"} />
@@ -294,7 +315,8 @@ export function AddSaveModal({ availableTags, availableStyleTags, initialSave, o
             </label>
 
             <fieldset className="form-field tag-field">
-              <legend>Tags <small>Optional</small></legend>
+              <legend>Secondary tags <small>Optional</small></legend>
+              <p className="field-help">Add topics, collections, or other details you want to filter later.</p>
               <TagPicker
                 availableTags={allTags}
                 selectedTags={selectedTags}

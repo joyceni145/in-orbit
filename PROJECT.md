@@ -61,9 +61,9 @@ Card navigation uses progressive disclosure. Saves with short descriptions open 
 
 The intended interaction is a modal, not a separate page.
 
-The Add save modal includes manual title, URL, notes, and tag entry. The modal uses a warm yellow “star core” treatment and the primary action is labeled “Send into orbit.” When Supabase is configured, new saves are written through an authenticated server action and the success animation runs only after the database confirms the insert. Without backend configuration, the visual prototype retains its temporary local-state fallback. Custom tag names are retained in browser session storage so the tag picker can be reviewed across modal openings. A short shooting-star transition is a provisional success animation pending further motion references.
+The Add save modal includes a required manual Type choice near the top, followed by title, URL, notes, and optional secondary tag entry. The selected Type is the save's primary Library category and is persisted directly rather than inferred by the system. The modal uses a warm yellow “star core” treatment and the primary action is labeled “Send into orbit.” When Supabase is configured, new saves are written through an authenticated server action and the success animation runs only after the database confirms the insert. Without backend configuration, the visual prototype retains its temporary local-state fallback. Custom secondary tag names are retained in browser session storage so the tag picker can be reviewed across modal openings. A short shooting-star transition is a provisional success animation pending further motion references.
 
-Selecting the primary `Portfolio` tag reveals a separate optional Portfolio style field. Style labels such as `Playful` and `Modern & clean` remain distinct from general content tags so the archive can eventually filter by both subject and visual character.
+Selecting the secondary `Portfolio` tag reveals a separate optional Portfolio style field. Style labels such as `Playful` and `Modern & clean` remain distinct from general content tags so the archive can eventually filter by both subject and visual character.
 
 Tag controls sit directly on the modal gradient as individual warm-white pills that echo the input fields, rather than inside a boxed field. The modal X closes immediately; Cancel, backdrop, and Escape retain unsaved-change protection.
 
@@ -109,7 +109,7 @@ For the functional version, provide upload progress, failure feedback, and retry
 
 Do not build an infinite canvas or manual image-reordering system unless explicitly requested.
 
-The current frontend prototype uses a borderless masonry collage rather than a spatial canvas. It supports switching from the Library, searching and filtering sample images, pasting one PNG/JPG/WebP image from the clipboard, dragging one image from the desktop or Finder, optional inline tagging, and an enlarged detail view. Pasted images use temporary browser object URLs: they are inserted newest first and remain available while the page is open, but they are not uploaded or persisted and disappear on refresh. Unsupported formats and files larger than 15 MB receive neutral inline feedback.
+The current frontend prototype uses a borderless masonry collage rather than a spatial canvas. It supports switching from the Library, searching and filtering sample images, pasting one PNG/JPG/WebP image from the clipboard, dragging one image from the desktop or Finder, optional inline tagging, an enlarged detail view, and deletion from that detail view. Image deletion is currently session-only: pasted images are removed from browser memory, while removed fictional samples return on refresh. Pasted images use temporary browser object URLs: they are inserted newest first and remain available while the page is open, but they are not uploaded or persisted and disappear on refresh. Unsupported formats and files larger than 15 MB receive neutral inline feedback.
 
 ### Ask the Atlas
 
@@ -316,6 +316,9 @@ Use `app/` for routes and global styles, `components/` for reusable UI, and `con
 - Placeholder content remains in the interface until each persistence flow is connected and verified.
 - Notion is a one-time import source rather than a permanent two-way sync.
 - Imported saves preserve Notion Type values as categories, descriptive Tags separately, Portfolio Level where present, and Favourite as a dedicated state.
+- Add and Edit save flows expose Type as an explicit primary category; the system does not choose it automatically.
+- General tags remain optional secondary metadata, with Portfolio styles revealed when the Portfolio tag is selected.
+- Images can be removed from the current session through the enlarged detail view; persistent deletion waits for Storage integration.
 - Each imported record stores its Notion page ID and source so repeated imports can update or skip the same page without relying on URL uniqueness.
 
 **Still to explore:**

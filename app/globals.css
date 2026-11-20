@@ -591,6 +591,34 @@ h1 {
 .form-field input[aria-invalid="true"] { border-color: rgb(74 69 64 / 38%); }
 .form-field .field-error { color: #68635d; }
 
+.save-type-field .select-menu { width: 100%; }
+.save-type-field .select-trigger {
+  width: 100%;
+  height: 48px;
+  border-color: rgb(128 88 33 / 20%);
+  border-radius: 12px;
+  background: rgb(255 254 243 / 96%);
+  box-shadow: 0 8px 24px rgb(80 58 31 / 7%);
+  color: var(--modal-ink);
+}
+.save-type-field .select-trigger:hover,
+.save-type-field .select-trigger[aria-expanded="true"] { border-color: rgb(121 78 23 / 58%); background: #fffef5; }
+.save-type-field .select-options {
+  right: auto;
+  bottom: auto;
+  left: 0;
+  top: calc(100% + 8px);
+  width: min(100%, 280px);
+  border-color: transparent;
+  background: rgb(255 244 196 / 98%);
+  box-shadow: 0 20px 56px rgb(75 42 12 / 18%);
+}
+.save-type-field .select-options button { color: #5d4b3d; }
+.save-type-field .select-options button:hover,
+.save-type-field .select-options button:focus-visible { background: rgb(94 57 24 / 8%); color: var(--modal-ink); }
+.save-type-field .select-options button[aria-selected="true"] { color: var(--modal-ink); }
+.save-type-field .select-options svg { stroke: #6c4815; }
+
 .tag-picker { position: relative; }
 .selected-tags { display: flex; min-height: 40px; align-items: center; flex-wrap: wrap; gap: 8px; }
 
@@ -1297,7 +1325,7 @@ h1 {
   isolation: isolate;
   border: 2px solid #f7e5a4;
   border-radius: 24px;
-  background: linear-gradient(180deg, rgb(255 248 216 / 75%) 0%, rgb(255 227 139 / 75%) 100%);
+  background: linear-gradient(180deg, rgb(255 248 216 / 90%) 0%, rgb(255 227 139 / 90%) 100%);
   box-shadow:
     0 0 18px rgb(255 227 139 / 52%),
     0 0 44px rgb(255 227 139 / 30%);
@@ -1315,8 +1343,10 @@ h1 {
 }
 
 .nebula-drop-overlay .collection-empty { position: relative; width: min(100%, 560px); padding: 64px 24px; margin: 0; }
-.nebula-drop-overlay .collection-empty > span { color: #fff2b8; }
-.nebula-drop-overlay .collection-empty p { color: rgb(255 250 235 / 78%); }
+.nebula-drop-overlay .collection-empty > span { color: #6c4b1b; }
+.nebula-drop-overlay .collection-empty h2,
+.nebula-drop-overlay .collection-empty h3 { color: #29231f; text-shadow: none; }
+.nebula-drop-overlay .collection-empty p { color: #4c4035; }
 
 .nebula-detail-modal {
   width: min(100%, 920px);
@@ -1352,7 +1382,14 @@ h1 {
 .nebula-detail-footer { display: flex; margin-top: 16px; align-items: center; justify-content: space-between; gap: 16px; }
 .nebula-detail-footer ul { display: flex; padding: 0; margin: 0; flex-wrap: wrap; gap: 6px; list-style: none; }
 .nebula-detail-footer li { padding: 4px 8px; border-radius: 12px; background: var(--surface); color: #d1cdd7; font-size: 12px; }
-.nebula-detail-footer > button { min-width: 88px; min-height: 40px; padding: 8px 16px; border: 0; border-radius: 20px; background: #fffdf8; color: var(--star-ink); }
+.nebula-delete-message { padding: 12px 16px; margin-top: 16px; border-radius: 14px; background: var(--surface); color: #d1cdd7; font-size: 13px; line-height: 20px; }
+.nebula-detail-actions { display: flex; flex: 0 0 auto; gap: 8px; }
+.nebula-detail-actions button { min-width: 88px; min-height: 40px; padding: 8px 16px; border: 0; border-radius: 20px; background: var(--surface); color: var(--text); }
+.nebula-detail-actions button:hover { background: var(--surface-hover); }
+.nebula-detail-actions .nebula-detail-close,
+.nebula-detail-actions .nebula-delete-confirm { background: #fffdf8; color: var(--star-ink); }
+.nebula-detail-actions .nebula-detail-close:hover,
+.nebula-detail-actions .nebula-delete-confirm:hover { background: #fff; }
 
 .skip-link {
   position: fixed;
@@ -1416,7 +1453,8 @@ h1 {
   .nebula-detail-modal { width: 100%; max-height: calc(100dvh - 16px); padding: 16px; border-radius: 24px 24px 0 0; }
   .nebula-detail-header h2 { font-size: 24px; line-height: 32px; }
   .nebula-detail-footer { align-items: stretch; flex-direction: column; }
-  .nebula-detail-footer > button { width: 100%; }
+  .nebula-detail-actions { width: 100%; }
+  .nebula-detail-actions button { flex: 1; }
   .artwork { aspect-ratio: 1.9 / 1; }
   .card-content h2 { font-size: 24px; line-height: 32px; }
   .card-content > p { font-size: 14px; line-height: 24px; }

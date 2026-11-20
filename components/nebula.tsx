@@ -17,12 +17,19 @@ function isTypingTarget(target: EventTarget | null) {
   return target instanceof Element && Boolean(target.closest("input, textarea, [contenteditable='true']"));
 }
 
-function NebulaDetailModal({ image, onClose }: { image: NebulaImage; onClose: () => void }) {
+function NebulaDetailModal({ image, onClose, onDelete }: { image: NebulaImage; onClose: () => void; onDelete: (image: NebulaImage) => void }) {
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const dialogRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const confirmDeleteButtonRef = useRef<HTMLButtonElement>(null);
   const closeRef = useRef(onClose);
+  const confirmDeleteRef = useRef(false);
 
   useEffect(() => { closeRef.current = onClose; }, [onClose]);
+  useEffect(() => { confirmDeleteRef.current = confirmDelete; }, [confirmDelete]);
+  useEffect(() => {
+    if (confirmDelete) window.requestAnimationFrame(() => confirmDeleteButtonRef.current?.focus());
+  }, [confirmDelete]);
 
   useEffect(() => {
     const previousFocus = document.activeElement as HTMLElement | null;
@@ -33,7 +40,8 @@ function NebulaDetailModal({ image, onClose }: { image: NebulaImage; onClose: ()
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         event.preventDefault();
-        closeRef.current();
+        if (confirmDeleteRef.current) setConfirmDelete(false);
+        else closeRef.current();
         return;
       }
 
@@ -77,9 +85,28 @@ function NebulaDetailModal({ image, onClose }: { image: NebulaImage; onClose: ()
         <div className="nebula-detail-image">
           <Image src={image.src} alt={image.alt} width={image.width} height={image.height} unoptimized />
         </div>
+        {confirmDelete && (
+          <p className="nebula-delete-message" id="nebula-delete-message" role="status">
+            {image.temporary
+              ? "Delete this temporary image? It only exists for this session and cannot be restored."
+              : "Delete this image from the current session? It will return when the page is refreshed."}
+          </p>
+        )}
         <footer className="nebula-detail-footer">
           <ul aria-label="Image tags">{image.tags.map(tag => <li key={tag}>{tag}</li>)}</ul>
-          <button type="button" onClick={onClose}>Close</button>
+          <div className="nebula-detail-actions">
+            {confirmDelete ? (
+              <>
+                <button type="button" onClick={() => setConfirmDelete(false)}>Keep image</button>
+                <button ref={confirmDeleteButtonRef} className="nebula-delete-confirm" type="button" onClick={() => onDelete(image)} aria-describedby="nebula-delete-message">Delete</button>
+              </>
+            ) : (
+              <>
+                <button className="nebula-delete-trigger" type="button" onClick={() => setConfirmDelete(true)}>Delete image</button>
+                <button className="nebula-detail-close" type="button" onClick={onClose}>Close</button>
+              </>
+            )}
+          </div>
         </footer>
       </div>
     </div>
@@ -176,6 +203,24 @@ export function Nebula({ active, query }: NebulaProps) {
     setNotice(`Added the “${tag}” tag for this session.`);
   };
 
+  const deleteImage = (image: NebulaImage) => {
+    const remainingImages = images.filter(item => item.id !== image.id);
+    setImages(remainingImages);
+    if (selectedTag !== "All images" && !remainingImages.some(item => item.tags.includes(selectedTag))) {
+      setSelectedTag("All images");
+    }
+    if (image.src.startsWith("blob:")) {
+      URL.revokeObjectURL(image.src);
+      objectUrlsRef.current.delete(image.src);
+    }
+    if (pendingTagId === image.id) {
+      setPendingTagId(null);
+      setTagDraft("");
+    }
+    setSelectedImage(null);
+    setNotice(`Removed “${image.alt}” from this session.`);
+  };
+
   const hasFiles = (event: React.DragEvent) => event.dataTransfer.types.includes("Files");
 
   return (
@@ -266,7 +311,7 @@ export function Nebula({ active, query }: NebulaProps) {
           <CollectionEmptyState title="Drop image here." description="Release to add this image for the current session." headingLevel="h3" />
         </div>
       )}
-      {selectedImage && <NebulaDetailModal image={selectedImage} onClose={() => setSelectedImage(null)} />}
+      {selectedImage && <NebulaDetailModal image={selectedImage} onClose={() => setSelectedImage(null)} onDelete={deleteImage} />}
     </section>
   );
 }

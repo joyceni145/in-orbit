@@ -83,6 +83,7 @@ export function Library({ saves: persistedSaves, persistenceEnabled, loadError }
         title: save.title,
         url: save.url ?? "",
         notes: save.description,
+        contentType: save.type,
         tags: save.tags,
         styleTags: save.styleTags ?? [],
       })
@@ -124,6 +125,7 @@ export function Library({ saves: persistedSaves, persistenceEnabled, loadError }
       title: save.title,
       url: save.url ?? "",
       notes: save.description,
+      contentType: save.type,
       tags: save.tags,
       styleTags: save.styleTags ?? [],
     });
