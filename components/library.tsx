@@ -83,6 +83,12 @@ export function Library({ saves: persistedSaves, persistenceEnabled, loadError }
     if (launchTimerRef.current) clearTimeout(launchTimerRef.current);
   }, []);
 
+  const triggerSaveLaunch = () => {
+    setLaunchSequence(Date.now());
+    if (launchTimerRef.current) clearTimeout(launchTimerRef.current);
+    launchTimerRef.current = setTimeout(() => setLaunchSequence(null), 1400);
+  };
+
   const addSave = async (save: Save, createdTags: string[], createdStyleTags: string[]): Promise<CreateSaveResult> => {
     const result = persistenceEnabled
       ? await createSave({
@@ -119,9 +125,7 @@ export function Library({ saves: persistedSaves, persistenceEnabled, loadError }
     setSort("newest");
     setQuery("");
     setAnnouncement(persistenceEnabled ? `${saved.title} was saved.` : `${saved.title} was added for this session.`);
-    setLaunchSequence(Date.now());
-    if (launchTimerRef.current) clearTimeout(launchTimerRef.current);
-    launchTimerRef.current = setTimeout(() => setLaunchSequence(null), 1400);
+    triggerSaveLaunch();
     return result;
   };
 
@@ -157,6 +161,7 @@ export function Library({ saves: persistedSaves, persistenceEnabled, loadError }
     }
     setAnnouncement(`${updated.title} was updated.`);
     setEditingSave(null);
+    triggerSaveLaunch();
     return result;
   };
 
@@ -200,9 +205,6 @@ export function Library({ saves: persistedSaves, persistenceEnabled, loadError }
             ))}
           </div>
           <div className="toolbar">
-            <p className="result-count" role="status" aria-live="polite">
-              {visible.length} {visible.length === 1 ? "save" : "saves"}<span> · {syncError ? "Sync unavailable" : showingSamples ? "Sample content" : persistenceEnabled ? "Private library" : "Temporary session"}</span>
-            </p>
             <div className="layout-switcher" role="group" aria-label="Choose save layout">
               <button type="button" aria-pressed={layout === "gallery"} onClick={() => setLayout("gallery")}>
                 <svg viewBox="0 0 18 18" aria-hidden="true"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="11" y="2" width="5" height="5" rx="1"/><rect x="2" y="11" width="5" height="5" rx="1"/><rect x="11" y="11" width="5" height="5" rx="1"/></svg>
@@ -219,6 +221,10 @@ export function Library({ saves: persistedSaves, persistenceEnabled, loadError }
             </button>
           </div>
         </div>
+
+        <p className="sr-only" role="status" aria-live="polite">
+          {visible.length} {visible.length === 1 ? "save" : "saves"} shown.
+        </p>
 
         {syncError && <p className="library-sync-error" role="alert">{syncError}</p>}
 

@@ -37,7 +37,7 @@ Gallery cards hug their available content instead of sharing a forced minimum he
 
 Dropdowns and general popovers use softly blurred white translucency rather than native browser menus or outlined containers. Menus use a restrained warm checkmark for selection. The Add save modal uses the supplied vertical gradient: `#FFF8D8` at 100% opacity at the top, `#FFF0B0` at 75% opacity at the midpoint, and `#FFE38B` at 75% opacity at the bottom. Modal overlays use `#08061A` at 50% opacity. Form fields are near-opaque warm white to preserve text and placeholder contrast against the gradient. The primary Type selector uses the same field treatment and appears before title and URL; optional secondary tags remain unboxed pills lower in the form. Text and controls use dark aubergine-brown, validation feedback is neutral grey, and the primary “Send into orbit” action is white with a custom shooting-star icon. The desktop modal is a compact centered panel; on small screens it becomes a near-full-screen bottom sheet. Form fields use persistent labels and 48px inputs.
 
-The homepage is the library. Keep the introduction compact enough to lead naturally into browsing. Categories, search, and sort use familiar labels. The active save category uses a restrained amber underline glow; the Library/Images segmented control does not. Cards show the save type as plain amber text and use pills only for secondary topic and style tags. Source copy is omitted from card previews.
+The homepage is the library. Keep the introduction compact enough to lead naturally into browsing. Categories, search, and sort use familiar labels. The active save category uses a restrained amber underline glow; the Library/Images segmented control does not. The visible controls omit the save-count and private-library status so type filters retain the available width; filtered result counts remain available to assistive technology. Cards show the save type as plain amber text and use pills only for secondary topic and style tags. Source copy is omitted from card previews.
 
 Persisted save cards expose management through a quiet three-dot control layered over the preview. Its compact translucent menu offers Edit and Delete without changing the card's primary open-link behaviour. Editing reuses the warm Add save modal; deletion requires a separate, compact confirmation and uses neutral—not alarming red—feedback.
 
@@ -52,7 +52,7 @@ Images shares the same header, search, background, and glass language, then open
 - Preserve contrast against translucent surfaces; validate at final background combinations.
 - The yellow cursor trail is a continuous two-layer canvas stroke, not particles. It shares the modal's starlight palette, remains lightweight, sits above modal overlays, and is disabled for coarse pointers and reduced-motion preferences.
 - The wordmark is plain editorial typography with no orbit animation or decorative overlap.
-- Sending a temporary save triggers a short shooting-star launch from the lower center of the viewport. This is an exploratory first pass and should be revised when specific motion references are chosen.
+- Successfully adding or updating a save triggers a short shooting-star launch from the lower center of the viewport. This is an exploratory first pass and should be revised when specific motion references are chosen.
 
 ## Voice
 Quiet, personal, editorial, slightly dreamy. No startup marketing language, unnecessary exclamation points, or forced space metaphors. Themed terminology is optional; clarity wins.

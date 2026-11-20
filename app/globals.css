@@ -382,16 +382,6 @@ h1 {
   flex: 0 0 auto;
 }
 
-.result-count {
-  margin-right: 8px;
-  color: var(--quiet);
-  font-size: 12px;
-  line-height: 20px;
-  white-space: nowrap;
-}
-
-.result-count span { color: rgb(184 181 193 / 65%); }
-
 .select-trigger,
 .add-save,
 .layout-switcher {
@@ -1439,7 +1429,6 @@ h1 {
   .search input { padding: 16px 0; font-size: 14px; }
   .library-controls { margin-top: 40px; }
   .toolbar { display: grid; grid-template-columns: 1fr auto; }
-  .result-count { grid-column: 1 / -1; margin: 0 0 8px; text-align: right; }
   .layout-switcher { grid-column: 1 / -1; justify-self: end; }
   .select-menu { min-width: 0; }
   .select-trigger { width: 100%; }
