@@ -38,7 +38,7 @@ function validateSaveInput(input: CreateSaveInput) {
     title: typeof input.title === "string" ? input.title.trim().slice(0, 240) : "",
     url,
     notes: typeof input.notes === "string" ? input.notes.trim().slice(0, 12_000) : "",
-    contentType: input.contentType,
+    contentType: input.contentType.trim(),
     tags,
     styleTags: tags.some(tag => tag.toLowerCase() === "portfolio") ? cleanTags(input.styleTags) : [],
   };

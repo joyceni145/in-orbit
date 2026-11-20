@@ -3,9 +3,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Save } from "@/content/saves";
 import { artworkForType, type CreateSaveResult } from "@/lib/saves";
-import { SelectMenu, type SelectOption } from "./select-menu";
 
 type AddSaveModalProps = {
+  availableTypes: string[];
   availableTags: string[];
   availableStyleTags: string[];
   initialSave?: Save;
@@ -13,13 +13,13 @@ type AddSaveModalProps = {
   onClose: () => void;
 };
 
-const saveTypeOptions: readonly SelectOption<Save["type"]>[] = [
-  { value: "Books", label: "Book" },
-  { value: "Articles", label: "Article" },
-  { value: "Websites", label: "Website" },
-  { value: "Videos", label: "Video" },
-  { value: "Tools", label: "Tool" },
-];
+const typeLabels: Record<string, string> = {
+  Books: "Book",
+  Articles: "Article",
+  Websites: "Website",
+  Videos: "Video",
+  Tools: "Tool",
+};
 
 function parseWebAddress(value: string) {
   const trimmed = value.trim();
@@ -137,7 +137,140 @@ function TagPicker({ availableTags, selectedTags, onChange, onCreate, optionsId,
   );
 }
 
-export function AddSaveModal({ availableTags, availableStyleTags, initialSave, onSave, onClose }: AddSaveModalProps) {
+function TypePicker({ availableTypes, value, onChange, onCreate }: {
+  availableTypes: string[];
+  value: string;
+  onChange: (type: string) => void;
+  onCreate: (type: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const rootRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const searchRef = useRef<HTMLInputElement>(null);
+  const optionRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const normalizedQuery = query.trim().slice(0, 48);
+  const filteredTypes = availableTypes.filter(type => type.toLowerCase().includes(normalizedQuery.toLowerCase()));
+  const matchingType = availableTypes.find(type => type.toLowerCase() === normalizedQuery.toLowerCase());
+  const canCreate = normalizedQuery.length > 0 && !matchingType;
+
+  useEffect(() => {
+    if (!open) return;
+
+    const closeWhenOutside = (event: PointerEvent) => {
+      if (!rootRef.current?.contains(event.target as Node)) {
+        setOpen(false);
+        setQuery("");
+      }
+    };
+
+    document.addEventListener("pointerdown", closeWhenOutside);
+    window.requestAnimationFrame(() => searchRef.current?.focus());
+    return () => document.removeEventListener("pointerdown", closeWhenOutside);
+  }, [open]);
+
+  const close = () => {
+    setOpen(false);
+    setQuery("");
+    window.requestAnimationFrame(() => triggerRef.current?.focus());
+  };
+
+  const choose = (type: string) => {
+    onChange(type);
+    close();
+  };
+
+  const create = () => {
+    if (!canCreate) return;
+    onCreate(normalizedQuery);
+    onChange(normalizedQuery);
+    close();
+  };
+
+  return (
+    <div className="save-type-picker" ref={rootRef}>
+      <button
+        ref={triggerRef}
+        className="select-trigger type-picker-trigger"
+        type="button"
+        aria-label="Save type"
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        aria-controls="save-type-options"
+        onClick={() => setOpen(current => !current)}
+      >
+        <span>{typeLabels[value] ?? value}</span>
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4" /></svg>
+      </button>
+
+      {open && (
+        <div className="tag-popover type-popover" onKeyDown={event => {
+          if (event.key === "Escape") {
+            event.stopPropagation();
+            close();
+          }
+        }}>
+          <label className="tag-search">
+            <span className="sr-only">Search or create save types</span>
+            <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"/><path d="m13 13 4 4"/></svg>
+            <input
+              ref={searchRef}
+              value={query}
+              maxLength={48}
+              onChange={event => setQuery(event.target.value)}
+              onKeyDown={event => {
+                if (event.key === "ArrowDown" && filteredTypes.length) {
+                  event.preventDefault();
+                  optionRefs.current[0]?.focus();
+                }
+                if (event.key === "Enter") {
+                  event.preventDefault();
+                  if (matchingType) choose(matchingType);
+                  else create();
+                }
+              }}
+              placeholder="Search types…"
+            />
+          </label>
+          <div id="save-type-options" className="tag-options type-options" role="listbox" aria-label="Save type">
+            {filteredTypes.map((type, index) => (
+              <button
+                key={type}
+                ref={element => { optionRefs.current[index] = element; }}
+                type="button"
+                role="option"
+                aria-selected={type === value}
+                onClick={() => choose(type)}
+                onKeyDown={event => {
+                  if (event.key === "ArrowDown") {
+                    event.preventDefault();
+                    optionRefs.current[(index + 1) % filteredTypes.length]?.focus();
+                  }
+                  if (event.key === "ArrowUp") {
+                    event.preventDefault();
+                    if (index === 0) searchRef.current?.focus();
+                    else optionRefs.current[index - 1]?.focus();
+                  }
+                }}
+              >
+                <span>{typeLabels[type] ?? type}</span>
+                <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m3 8 3 3 7-7" /></svg>
+              </button>
+            ))}
+            {!filteredTypes.length && !canCreate && <p className="tag-empty">No matching types</p>}
+          </div>
+          {canCreate && (
+            <button className="create-tag" type="button" onClick={create}>
+              <span aria-hidden="true">＋</span> Create “{normalizedQuery}”
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function AddSaveModal({ availableTypes, availableTags, availableStyleTags, initialSave, onSave, onClose }: AddSaveModalProps) {
   const editing = Boolean(initialSave);
   const [contentType, setContentType] = useState<Save["type"]>(initialSave?.type ?? "Websites");
   const [title, setTitle] = useState(initialSave?.title ?? "");
@@ -147,6 +280,7 @@ export function AddSaveModal({ availableTags, availableStyleTags, initialSave, o
   const [selectedStyleTags, setSelectedStyleTags] = useState<string[]>(initialSave?.styleTags ?? []);
   const [newTags, setNewTags] = useState<string[]>([]);
   const [newStyleTags, setNewStyleTags] = useState<string[]>([]);
+  const [newTypes, setNewTypes] = useState<string[]>([]);
   const [urlTouched, setUrlTouched] = useState(false);
   const [showDiscard, setShowDiscard] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -164,6 +298,7 @@ export function AddSaveModal({ availableTags, availableStyleTags, initialSave, o
     : contentType !== "Websites" || Boolean(title.trim() || url.trim() || notes.trim() || selectedTags.length || selectedStyleTags.length);
   const allTags = useMemo(() => Array.from(new Set([...availableTags, ...newTags])).sort((a, b) => a.localeCompare(b)), [availableTags, newTags]);
   const allStyleTags = useMemo(() => Array.from(new Set([...availableStyleTags, ...newStyleTags])).sort((a, b) => a.localeCompare(b)), [availableStyleTags, newStyleTags]);
+  const allTypes = useMemo(() => Array.from(new Set([...availableTypes, ...newTypes])), [availableTypes, newTypes]);
   const suggestedTitle = parsedUrl?.hostname.replace(/^www\./, "") ?? "";
 
   useEffect(() => { dirtyRef.current = isDirty; }, [isDirty]);
@@ -278,12 +413,11 @@ export function AddSaveModal({ availableTags, availableStyleTags, initialSave, o
           <div className="form-fields">
             <div className="form-field save-type-field">
               <span>Type</span>
-              <SelectMenu
-                label="Save type"
+              <TypePicker
+                availableTypes={allTypes}
                 value={contentType}
-                options={saveTypeOptions}
                 onChange={setContentType}
-                optionsId="save-type-options"
+                onCreate={type => setNewTypes(current => [...current, type])}
               />
             </div>
 

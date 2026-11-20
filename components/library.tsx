@@ -71,6 +71,12 @@ export function Library({ saves: persistedSaves, persistenceEnabled, loadError }
     .sort((a, b) => sort === "title" ? a.title.localeCompare(b.title) : b.savedAt.localeCompare(a.savedAt));
   const availableTags = useMemo(() => Array.from(new Set([...starterTags, ...librarySaves.flatMap(save => save.tags), ...sessionTags])).sort((a, b) => a.localeCompare(b)), [librarySaves, sessionTags]);
   const availableStyleTags = useMemo(() => Array.from(new Set([...starterPortfolioStyles, ...librarySaves.flatMap(save => save.styleTags ?? []), ...sessionStyleTags])).sort((a, b) => a.localeCompare(b)), [librarySaves, sessionStyleTags]);
+  const availableTypes = useMemo(() => {
+    const standardTypes: string[] = categories.filter(type => type !== "All saves");
+    const customTypes = Array.from(new Set(librarySaves.map(save => save.type).filter(type => !standardTypes.includes(type)))).sort((a, b) => a.localeCompare(b));
+    return [...standardTypes, ...customTypes];
+  }, [librarySaves]);
+  const filterCategories = ["All saves", ...availableTypes];
   const libraryIsEmpty = !showingSamples && librarySaves.length === 0;
 
   useEffect(() => () => {
@@ -187,7 +193,7 @@ export function Library({ saves: persistedSaves, persistenceEnabled, loadError }
       <div className="library-view" hidden={view !== "library"}>
         <div className="library-controls">
           <div className="categories" role="group" aria-label="Filter by content type">
-            {categories.map(item => (
+            {filterCategories.map(item => (
               <button key={item} aria-pressed={category === item} onClick={() => setCategory(item)}>
               {item}<span>{item === "All saves" ? librarySaves.length : librarySaves.filter(save => save.type === item).length}</span>
               </button>
@@ -255,8 +261,8 @@ export function Library({ saves: persistedSaves, persistenceEnabled, loadError }
           <i /><i /><i />
         </div>
       )}
-      {addModalOpen && <AddSaveModal availableTags={availableTags} availableStyleTags={availableStyleTags} onSave={addSave} onClose={() => setAddModalOpen(false)} />}
-      {editingSave && <AddSaveModal initialSave={editingSave} availableTags={availableTags} availableStyleTags={availableStyleTags} onSave={editSave} onClose={() => setEditingSave(null)} />}
+      {addModalOpen && <AddSaveModal availableTypes={availableTypes} availableTags={availableTags} availableStyleTags={availableStyleTags} onSave={addSave} onClose={() => setAddModalOpen(false)} />}
+      {editingSave && <AddSaveModal initialSave={editingSave} availableTypes={availableTypes} availableTags={availableTags} availableStyleTags={availableStyleTags} onSave={editSave} onClose={() => setEditingSave(null)} />}
       {deleteCandidate && <DeleteSaveDialog save={deleteCandidate} onConfirm={() => removeSave(deleteCandidate)} onClose={() => setDeleteCandidate(null)} />}
       {detailSave && <SaveDetailModal save={detailSave} onClose={() => setDetailSave(null)} />}
     </section>

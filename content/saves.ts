@@ -1,9 +1,9 @@
 export const categories = ["All saves", "Books", "Articles", "Websites", "Videos", "Tools"] as const;
-export type Category = (typeof categories)[number];
+export type Category = string;
 export type Save = {
   id: string;
   title: string;
-  type: Exclude<Category, "All saves">;
+  type: string;
   source: string;
   description: string;
   metadataDescription?: string;

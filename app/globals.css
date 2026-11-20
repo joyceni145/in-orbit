@@ -591,7 +591,8 @@ h1 {
 .form-field input[aria-invalid="true"] { border-color: rgb(74 69 64 / 38%); }
 .form-field .field-error { color: #68635d; }
 
-.save-type-field .select-menu { width: 100%; }
+.save-type-field .select-menu,
+.save-type-picker { position: relative; width: 100%; }
 .save-type-field .select-trigger {
   width: 100%;
   height: 48px;
@@ -618,6 +619,18 @@ h1 {
 .save-type-field .select-options button:focus-visible { background: rgb(94 57 24 / 8%); color: var(--modal-ink); }
 .save-type-field .select-options button[aria-selected="true"] { color: var(--modal-ink); }
 .save-type-field .select-options svg { stroke: #6c4815; }
+
+.save-type-field .type-popover {
+  left: 0;
+  top: calc(100% + 8px);
+  bottom: auto;
+  width: 100%;
+  background: #fff4c4;
+  box-shadow: 0 22px 60px rgb(75 42 12 / 24%);
+  backdrop-filter: none;
+}
+
+.type-options { max-height: 200px; }
 
 .tag-picker { position: relative; }
 .selected-tags { display: flex; min-height: 40px; align-items: center; flex-wrap: wrap; gap: 8px; }
